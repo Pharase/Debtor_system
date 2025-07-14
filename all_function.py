@@ -508,8 +508,10 @@ def apply_formula(balance_row, transactions_df, verdict_df=None, int_function = 
     for field in priority_fields + ["หนี้รวมไม่แยกหมวดหมู่","ภาษีคงเหลือ"]:    
         remaining_dict[field] = max(0, remaining_dict.get(field, 0))
         
-    if replacement_amount > 0:
-        remaining_dict["Replacement"] = sold_amount_rec - replacement_amount    
+    replacement_amount = balance.get("replacement_amount")
+    if replacement_amount is not None:    
+        if replacement_amount > 0:
+            remaining_dict["Replacement"] = sold_amount_rec - replacement_amount    
     
     result.append(remaining_dict)
 

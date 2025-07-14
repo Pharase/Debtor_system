@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Management | Debtor System</title>
+    <link href="/static/style.css" rel="stylesheet">
+        <style>
+        body {
+            margin: 0;
+            padding-top: 50px; /* to avoid content going under the navbar */
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Management Tools</h1>
+
+    <h2>Upload New Data</h2>
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label for="file">Select Excel File:</label>
+        <input type="file" id="file" name="file" accept=".xlsx" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <h2>Download Reports</h2>
+    <a href="/download_report">📥 Download Summary Report</a>
+
+    <nav>
+        <a href="/home">Home</a> |
+        <a href="/debtors">Debtors</a> |
+        <a href="/accounting">Account</a> |
+        <a href="/management">Management</a>
+    </nav>
+</body>
+</html>

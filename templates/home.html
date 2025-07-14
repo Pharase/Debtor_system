@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Home | Debtor System</title>
+    <link href="/static/style.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding-top: 50px; /* to avoid content going under the navbar */
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 20px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Debtor Engine Overview</h1>
+    <div>
+        <p>🕒 Last updated: {{ time }}</p>
+        <p>📄 Total records: {{ "{:,.0f}".format(rows) }}</p>
+        <p>💰 Maximum debt amount: {{ "{:,.2f}".format(total_OS_temp) }} THB</p>
+        <p>🪙 Total payment collected: {{ "{:,.2f}".format(total_payment_rec) }} THB</p>
+        <p>🚗 Total auction sold collected: {{ "{:,.2f}".format(total_auc_rec) }} THB</p>
+        <p>🚕 Total direct sold collected: {{ "{:,.2f}".format(total_dir_rec) }} THB</p>
+    </div>
+    
+    <h2>📊 Monthly Collection Chart</h2>
+    <canvas id="monthlyChart" width="400" height="300"></canvas>
+    <script>
+        const ctx = document.getElementById('monthlyChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ months | safe }},
+                datasets: [
+                    {
+                        label: 'Payment (PM)',
+                        data: {{ amounts | safe }},
+                        backgroundColor: 'rgba(75, 192, 192, 0.4)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Sold - Auction',
+                        data: {{ auction_amounts | safe }},
+                        backgroundColor: 'rgba(255, 99, 132, 0.4)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Sold - Direct',
+                        data: {{ direct_amounts | safe }},
+                        backgroundColor: 'rgba(255, 206, 86, 0.4)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    x: {
+                      stacked: true,
+                    },
+                    y: {
+                        beginAtZero: true,
+                        stacked: true,
+                        ticks: {
+                            callback: value => value.toLocaleString()
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <nav>
+        <a href="/home">Home</a> |
+        <a href="/debtors">Debtors</a> |
+        <a href="/accounting">Account</a> |
+        <a href="/management">Management</a>
+    </nav>
+</body>
+</html>

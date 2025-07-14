@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Debtors | Debtor System</title>
+    <link href="/static/style.css" rel="stylesheet">
+        <style>
+        body {
+            margin: 0;
+            padding-top: 50px; /* to avoid content going under the navbar */
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debtor Details</h1>
+    <form method="POST" action="/debtors">
+        <label for="debtor_id">Search PAM Code:</label>
+        <input type="text" id="debtor_id" name="debtor_id" autocomplete="off" required>
+
+        <div id="suggestions" class="dropdown-menu show" style="display: none; position: absolute;"></div>
+
+        <label for="int_engine">
+            <input type="checkbox" name="int_engine" value="on"> Include Accrued Interest
+        </label>
+        <button type="submit">Search</button>
+    </form>
+
+{% if head_table_html %}
+    <h2>🧾 Results for Debtor ID</h2>
+    {{ head_table_html|safe }}
+
+    {% if total_os %}
+        <h4>💰 ยอดหนี้รวมภาษี (Total Outstanding Debt): {{ "{:,.2f}".format(total_os) }}</h4>
+    {% endif %}
+
+    {% if accrued_interest %}
+        <h5>🧮 ดอกเบี้ยค้างรับ (Accrued Interest): {{ "{:,.2f}".format(accrued_interest) }} ({{ accrued_days }} วัน)</h5>
+        
+    {% endif %}
+{% else %}
+    <p>No debtor data found.</p>
+{% endif %}
+
+{% if payment_table_html %}
+    <h2>💳 Payment Info</h2>
+    <div class="table-responsive">
+        {{ payment_table_html|safe }}
+    </div>
+{% else %}
+    <p>No payment data found.</p>
+{% endif %}
+
+    <nav>
+        <a href="/home">Home</a> |
+        <a href="/debtors">Debtors</a> |
+        <a href="/accounting">Account</a> |
+        <a href="/management">Management</a> 
+    </nav>
+</body>
+</html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const input = document.getElementById('debtor_id');
+  const dropdown = document.getElementById('suggestions');
+
+  input.addEventListener('input', function () {
+    const query = this.value;
+    if (query.length < 2) {
+      dropdown.style.display = 'none';
+      return;
+    }
+
+    fetch(`/search_pamcode?q=${query}`)
+      .then(response => response.json())
+      .then(data => {
+        dropdown.innerHTML = '';
+        if (data.length > 0) {
+          data.forEach(pam => {
+            const item = document.createElement('a');
+            item.classList.add('dropdown-item');
+            item.textContent = pam;
+            item.onclick = () => {
+              input.value = pam;
+              dropdown.style.display = 'none';
+            };
+            dropdown.appendChild(item);
+          });
+          dropdown.style.display = 'block';
+        } else {
+          dropdown.style.display = 'none';
+        }
+      });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+});
+</script>

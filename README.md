@@ -11,10 +11,10 @@ This system allows internal staff to search for debtor information and view curr
 
 ## 🚀 Features
 
-- 🔍 **Search for debtors** by ID, name, or room number
+- 🔍 **Search for debtors** by ID
 - 💰 **Display remaining balances**, separated by components (principal, interest, penalty, etc.)
-- 🧾 **View payment history** if available
-- 📊 Summary of debtor status with optional links to external follow-up systems
+- 🧾 **View payment history** 
+- 📊 Summary of debtor payments in systems
 - 🛡️ Accessible via browser, no installation required
 
 ---

@@ -1,0 +1,9 @@
+# secrets
+.env
+# real debtor data and generated output, never commit
+reports/
+uploads/
+*.db
+*.xlsx
+*.xls
+__pycache__/

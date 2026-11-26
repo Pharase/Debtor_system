@@ -7,14 +7,14 @@ from datetime import date, datetime
 from all_function import render_payment_table, calculate_accrued_interest_till_today,get_initial_balance,get_transactions,get_verdict,apply_formula
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://USER:PASSWORD@HOST:3306/Debtor_system"
+# Local SQLite file with the debtor data. Override with the DEBTOR_DB_PATH environment variable.
+DB_PATH = os.environ.get("DEBTOR_DB_PATH", r"C:\card_data\system_transform\database\Debtor_system.db")
+# Never hard-code credentials: set DATABASE_URL in the environment (see .env.example).
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", f"sqlite:///{DB_PATH}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-#with app.app_context():
-#    DB_PATH = db.engine.raw_connection()
     
-DB_PATH = r"C:\card_data\system_transform\database\Debtor_system.db"
 
 # === Configuration ===
 UPLOAD_FOLDER = 'uploads/'

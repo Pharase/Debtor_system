@@ -30,9 +30,15 @@ This system allows internal staff to search for debtor information and view curr
 
 ---
 
-## 🧪 How to Run (Development)
+## 🧪 How to Run
 
 ```bash
+pip install flask flask_sqlalchemy pandas openpyxl
+cp .env.example .env      # set DEBTOR_DB_PATH, TRANSACTION_FOLDER and (if needed) LEGACY_COLUMN_PREFIX
+python update_transaction_to_db.py   # import new transactions from the latest summary_data_file_*.xlsx
+python app.py                        # open http://127.0.0.1:5000
+```
 
-# Run the Flask app
-python app.py
+On Windows, `Run_Debtor_engine.bat` does both. If your database or Excel exports still use an older column
+prefix, set `LEGACY_COLUMN_PREFIX`: Excel headers are renamed on load, and database columns are renamed once
+(a `.before-rename.bak` copy of the database is saved first).

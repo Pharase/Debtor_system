@@ -2,6 +2,7 @@ import os
 import glob
 import sqlite3
 import pandas as pd
+from config import DB_FOLDER, TRANSACTION_FOLDER, connect, normalize_columns
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 
@@ -70,11 +71,11 @@ def get_latest_DB_file(folder_path, keyword, name_for_manual="DB file"):
         return select_DB_file(name_for_manual)
         
 # === CONFIG ===
-db_folder = r"C:\card_data\system_transform\database"
+db_folder = DB_FOLDER
 db_key = "Debtor_system"
 db_path = get_latest_DB_file(db_folder,db_key,name_for_manual="Main_database")
 table_name = 'Debtor_transaction'
-transaction_folder = r"Z:\Alpha\Programing_source\Transaction\Summary"
+transaction_folder = TRANSACTION_FOLDER
 transaction_file_key = "summary_data_file_"
 sheet_name = 'transaction_record'
 excel_path = get_latest_excel_file(transaction_folder, transaction_file_key, name_for_manual="summary_data_file_")
@@ -109,11 +110,12 @@ column_mapping = {
 unique_keys = ['account_code', 'code', 'TR_Date', 'Pay_Date', 'EFF_Date', 'Amount']
 
 # === STEP 1: Connect to DB and read existing data ===
-conn = sqlite3.connect(db_path)
+conn = connect(db_path)
 existing_df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
 
 # === STEP 2: Load Excel and process ===
-excel_df = pd.read_excel(excel_path, sheet_name=sheet_name, usecols=excel_columns)
+# Read all columns, rename legacy headers, then keep the expected ones
+excel_df = normalize_columns(pd.read_excel(excel_path, sheet_name=sheet_name))[excel_columns]
 
 excel_df['TR_Date'] = pd.to_datetime(excel_df["TR_Date"], errors="coerce")
 excel_df['Pay_Date'] = pd.to_datetime(excel_df["Pay_Date"], errors="coerce")

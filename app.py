@@ -4,13 +4,12 @@ import sqlite3
 import pandas as pd
 import os
 from datetime import date, datetime
+from config import DB_PATH, connect
 from all_function import render_payment_table, calculate_accrued_interest_till_today,get_initial_balance,get_transactions,get_verdict,apply_formula
 
 app = Flask(__name__)
-# Local SQLite file with the debtor data. Override with the DEBTOR_DB_PATH environment variable.
-DB_PATH = os.environ.get("DEBTOR_DB_PATH", r"C:\card_data\system_transform\database\Debtor_system.db")
 # Never hard-code credentials: set DATABASE_URL in the environment (see .env.example).
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", f"sqlite:///{DB_PATH}")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL") or f"sqlite:///{DB_PATH}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -46,7 +45,7 @@ def index():
 @app.route('/home')
 def home():
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = connect()
         #conn = get_mysql_connection()
         df = pd.read_sql_query("SELECT * FROM Debtor_OS", conn)
         for col in df.columns:
@@ -142,7 +141,7 @@ def debtors():
         debtor_id = request.form.get('debtor_id')
         int_engine = request.form.get('int_engine') == 'on'
         try:
-            conn = sqlite3.connect(DB_PATH)
+            conn = connect()
             
             # Head info
             head_query = "SELECT * FROM Debtor_Name WHERE account_code = ?"
@@ -214,7 +213,7 @@ def search_account_code():
     if not query or len(query) < 2:
         return jsonify([])
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = connect()
     cursor = conn.cursor()
 
     # Match account codes that start with the query
@@ -235,7 +234,7 @@ def management():
 
             try:
                 df = pd.read_excel(filepath)
-                conn = sqlite3.connect(DB_PATH)
+                conn = connect()
                 df.to_sql("debtors", conn, if_exists="append", index=False)
                 conn.close()
                 message = f"✅ Uploaded and saved {file.filename}"
@@ -249,7 +248,7 @@ def management():
 @app.route('/download_report')
 def download_report():
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = connect()
         df = pd.read_sql_query("SELECT * FROM debtors", conn)
         conn.close()
 

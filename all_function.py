@@ -1,8 +1,7 @@
 import pandas as pd
-import sqlite3
 from datetime import date
 
-DB_PATH = r"C:\card_data\system_transform\database\Debtor_system.db"
+from config import connect
 
 priority_fields = ['Expense','Outlay','Loss','Penalty','Interest','Opportunity_cost','Charge','Principal','Replacement']
 
@@ -48,7 +47,7 @@ def calculate_accrued_interest_till_today(result_df, annual_rate=0.15):
     return accrued_interest, days_passed
     
 def get_initial_balance(account_code):
-    conn = sqlite3.connect(DB_PATH)
+    conn = connect()
     #conn = get_mysql_connection()
     query = """
         SELECT 
@@ -107,7 +106,7 @@ def get_initial_balance(account_code):
     return df.iloc[0] if not df.empty else None
 
 def get_transactions(account_code):
-    conn = sqlite3.connect(DB_PATH)
+    conn = connect()
     df = pd.read_sql_query("SELECT * FROM Debtor_transaction WHERE account_code = ?", conn, params=(account_code,))
     df["TR_Date"] = df["TR_Date"].astype(str)
     df["Pay_Date"] = df["Pay_Date"].astype(str)
@@ -116,7 +115,7 @@ def get_transactions(account_code):
     return df.sort_values(by="EFF_Date")  # Make sure payments are in order
 
 def get_verdict(account_code):
-    conn = sqlite3.connect(DB_PATH)
+    conn = connect()
     df = pd.read_sql_query("SELECT * FROM Debtor_verdict WHERE account_code = ?", conn, params=(account_code,))
     conn.close()
     

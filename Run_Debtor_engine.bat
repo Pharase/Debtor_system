@@ -1,7 +1,8 @@
 @echo off
-REM Activate conda environment and run the script
-
-CALL "C:\Users\<user>\miniconda3\Scripts\activate.bat" activate base
-python "C:\card_data\system_transform\update_transaction_to_db.py"
-python "C:\card_data\system_transform\app.py"
+REM Activate the conda base environment from the current user profile, import new transactions, then start the web app.
+REM Settings (database path, transaction folder) come from .env in this folder.
+CALL "%USERPROFILE%\miniconda3\Scripts\activate.bat" base
+cd /d "%~dp0"
+python update_transaction_to_db.py
+python app.py
 pause
